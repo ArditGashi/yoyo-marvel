@@ -16,7 +16,7 @@ export const getMarvelCharacters = async (): Promise<MarvelCharacter[]> => {
   const hash = getHash(ts)
 
   const totalCharacters = 1493 // Total number of characters in the Marvel database
-  const limit = 10 // Number of characters to fetch
+  const limit = 16 // Number of characters to fetch
   const offset = getRandomOffset(totalCharacters - limit) // Ensure the offset doesn't go out of bounds
 
   try {
@@ -32,14 +32,20 @@ export const getMarvelCharacters = async (): Promise<MarvelCharacter[]> => {
 
     const results = response.data.data.results
 
-    return results.map((character: any) => ({
-      id: character.id,
-      name: character.name,
-      thumbnail: {
-        path: character.thumbnail.path,
-        extension: character.thumbnail.extension,
-      },
-    }))
+    return results
+      .filter(
+        (series: { thumbnail: { path: string } }) =>
+          series.thumbnail.path.indexOf('image_not_available') === -1 &&
+          series.thumbnail.path.indexOf('4c002e0305708') === -1 // Filter out placeholder images
+      )
+      .map((character: any) => ({
+        id: character.id,
+        name: character.name,
+        thumbnail: {
+          path: character.thumbnail.path,
+          extension: character.thumbnail.extension,
+        },
+      }))
   } catch (error: any) {
     console.error(
       'Error fetching Marvel characters:',

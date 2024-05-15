@@ -16,7 +16,6 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { ProfileHeader } from '@/components/navigation/ProfileHeader'
 import YoYoButton from '@/components/Button'
 import LottieLoader from '@/components/LottieLoader'
-import dimensions from '@/constants/Dimensions'
 
 export default function CharacterDetailScreen() {
   const { id } = useLocalSearchParams()
@@ -35,15 +34,7 @@ export default function CharacterDetailScreen() {
     fetchCharacter()
   }, [id])
 
-  if (!character) {
-    return (
-      <Text style={{ color: Colors.dark.tint }}>
-        Yo, the character was not found. Sorry, try again another day
-      </Text>
-    )
-  }
-
-  if (loading) {
+  if (!character || loading) {
     return <LottieLoader />
   }
 
