@@ -23,14 +23,23 @@ export const getMarvelComics = async (): Promise<MarvelComics[]> => {
 
     const results = response.data.data.results
 
-    return results.map((comic: any) => ({
-      id: comic.id,
-      title: comic.title,
-      thumbnail: {
-        path: comic.thumbnail.path,
-        extension: comic.thumbnail.extension,
-      },
-    }))
+    return results.map(
+      (comic: {
+        id: number
+        title: string
+        thumbnail: {
+          path: string
+          extension: string
+        }
+      }) => ({
+        id: comic.id,
+        title: comic.title,
+        thumbnail: {
+          path: comic.thumbnail.path,
+          extension: comic.thumbnail.extension,
+        },
+      })
+    )
   } catch (error: any) {
     console.error(
       'Error fetching Marvel comics:',

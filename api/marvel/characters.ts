@@ -38,14 +38,23 @@ export const getMarvelCharacters = async (): Promise<MarvelCharacter[]> => {
           series.thumbnail.path.indexOf('image_not_available') === -1 &&
           series.thumbnail.path.indexOf('4c002e0305708') === -1 // Filter out placeholder images
       )
-      .map((character: any) => ({
-        id: character.id,
-        name: character.name,
-        thumbnail: {
-          path: character.thumbnail.path,
-          extension: character.thumbnail.extension,
-        },
-      }))
+      .map(
+        (character: {
+          id: number
+          name: string
+          thumbnail: {
+            path: string
+            extension: string
+          }
+        }) => ({
+          id: character.id,
+          name: character.name,
+          thumbnail: {
+            path: character.thumbnail.path,
+            extension: character.thumbnail.extension,
+          },
+        })
+      )
   } catch (error: any) {
     console.error(
       'Error fetching Marvel characters:',
