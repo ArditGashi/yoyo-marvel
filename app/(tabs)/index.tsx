@@ -8,6 +8,7 @@ import ImageCarousel from '@/components/home/ImageCarousel'
 import LottieView from 'lottie-react-native'
 import LottieLoader from '@/components/LottieLoader'
 import { getMarvelCharacters } from '@/api/marvel/characters'
+import RecommendedSeriesSlider from '@/components/home/RecommendedSeriesSlider'
 
 interface MarvelCharacter {
   id: number
@@ -51,6 +52,7 @@ export default function HomeScreen() {
             activeColor={Colors.dark.yoyo}
             inactiveColor='white'
           />
+          <RecommendedSeriesSlider />
         </SafeAreaView>
       )}
     </View>

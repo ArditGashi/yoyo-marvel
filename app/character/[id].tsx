@@ -36,7 +36,11 @@ export default function CharacterDetailScreen() {
   }, [id])
 
   if (!character) {
-    return <LottieLoader />
+    return (
+      <Text style={{ color: Colors.dark.tint }}>
+        Yo, the character was not found. Sorry, try again another day
+      </Text>
+    )
   }
 
   if (loading) {
