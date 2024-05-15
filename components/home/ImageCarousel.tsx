@@ -1,3 +1,5 @@
+import Colors from '@/constants/Colors'
+import dimensions from '@/constants/Dimensions'
 import React, { useEffect, useRef } from 'react'
 import {
   View,
@@ -8,8 +10,6 @@ import {
   Text,
 } from 'react-native'
 import PagerView from 'react-native-pager-view'
-
-const screenWidth = Dimensions.get('window').width
 
 interface MarvelCharacter {
   id: number
@@ -94,7 +94,10 @@ const ImageCarousel: React.FC<ImageCarouselProps> = ({
       onPageSelected={handlePageSelected}
     >
       {extendedCharacters.map((character, index) => (
-        <View key={`${character.id}-${index}`} style={{ width: screenWidth }}>
+        <View
+          key={`${character.id}-${index}`}
+          style={{ width: dimensions.winWidth }}
+        >
           <Animated.Image
             source={{
               uri: `${character.thumbnail.path}.${character.thumbnail.extension}`,
@@ -128,7 +131,7 @@ const styles = StyleSheet.create({
     height: 250,
   },
   imageContainer: {
-    width: screenWidth,
+    width: dimensions.winWidth,
     height: '100%',
     position: 'relative', // Ensure this is positioned relatively
   },
@@ -139,11 +142,13 @@ const styles = StyleSheet.create({
   },
   textContainer: {
     position: 'absolute', // Position the text absolutely within the image container
-    bottom: 0,
-    left: 0,
-    width: '100%',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Optional: Add a semi-transparent background for better readability
-    padding: 10,
+    bottom: 8,
+    alignSelf: 'center',
+    fontWeight: 100,
+    borderRadius: 2,
+    backgroundColor: Colors.dark.background, // Optional: Add a semi-transparent background for better readability
+    paddingHorizontal: 6, // Ensure the text is above the image
+    paddingVertical: 4, // Ensure the text is above the image
   },
   title: {
     fontSize: 18,
