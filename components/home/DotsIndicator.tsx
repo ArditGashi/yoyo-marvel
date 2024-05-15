@@ -1,33 +1,43 @@
 import React, { useEffect, useRef } from 'react'
 import { View, StyleSheet, Animated } from 'react-native'
 
+interface MarvelCharacter {
+  id: number
+  name: string
+  description: string
+  thumbnail: {
+    path: string
+    extension: string
+  }
+}
+
 interface DotsIndicatorProps {
-  images: string[]
+  characters: MarvelCharacter[]
   activeIndex: number
   activeColor: string
   inactiveColor: string
 }
 
 const DotsIndicator: React.FC<DotsIndicatorProps> = ({
-  images,
+  characters,
   activeIndex,
   activeColor,
   inactiveColor,
 }) => {
-  const dotScale = useRef(images.map(() => new Animated.Value(1))).current
+  const dotScale = useRef(characters.map(() => new Animated.Value(1))).current
 
   useEffect(() => {
-    images.forEach((_, i) => {
+    characters.forEach((_, i) => {
       Animated.spring(dotScale[i], {
         toValue: activeIndex === i + 1 ? 1.2 : 1,
         useNativeDriver: true,
       }).start()
     })
-  }, [activeIndex, images])
+  }, [activeIndex, characters])
 
   return (
     <View style={styles.dotContainer}>
-      {images.map((_, index) => (
+      {characters.map((_, index) => (
         <Animated.View
           key={index}
           style={[

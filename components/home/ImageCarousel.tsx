@@ -1,34 +1,54 @@
 import React, { useEffect, useRef } from 'react'
-import { View, StyleSheet, Dimensions, Animated, Image } from 'react-native'
+import {
+  View,
+  StyleSheet,
+  Dimensions,
+  Animated,
+  Image,
+  Text,
+} from 'react-native'
 import PagerView from 'react-native-pager-view'
 
 const screenWidth = Dimensions.get('window').width
 
+interface MarvelCharacter {
+  id: number
+  name: string
+  thumbnail: {
+    path: string
+    extension: string
+  }
+}
+
 interface ImageCarouselProps {
-  images: string[]
+  characters: MarvelCharacter[]
   activeIndex: number
   setActiveIndex: React.Dispatch<React.SetStateAction<number>>
 }
 
 const ImageCarousel: React.FC<ImageCarouselProps> = ({
-  images,
+  characters,
   activeIndex,
   setActiveIndex,
 }) => {
-  const totalImages = images.length
-  const extendedImages =
-    totalImages > 0 ? [images[totalImages - 1], ...images, images[0]] : []
+  const totalCharacters = characters.length
+  const extendedCharacters =
+    totalCharacters > 0
+      ? [characters[totalCharacters - 1], ...characters, characters[0]]
+      : []
   const pagerRef = useRef<PagerView>(null)
-  const imageScale = useRef(images.map(() => new Animated.Value(0.9))).current
+  const imageScale = useRef(
+    characters.map(() => new Animated.Value(0.9))
+  ).current
 
   useEffect(() => {
-    if (images.length > 0) {
+    if (characters.length > 0) {
       Animated.spring(imageScale[activeIndex - 1], {
         toValue: 1,
         useNativeDriver: true,
       }).start()
 
-      images.forEach((_, i) => {
+      characters.forEach((_, i) => {
         if (i !== activeIndex - 1) {
           Animated.spring(imageScale[i], {
             toValue: 0.97,
@@ -37,10 +57,10 @@ const ImageCarousel: React.FC<ImageCarouselProps> = ({
         }
       })
     }
-  }, [activeIndex, images])
+  }, [activeIndex, characters])
 
   useEffect(() => {
-    if (images.length > 0) {
+    if (characters.length > 0) {
       const interval = setInterval(() => {
         const nextIndex = activeIndex + 1
         pagerRef.current?.setPage(nextIndex)
@@ -48,16 +68,16 @@ const ImageCarousel: React.FC<ImageCarouselProps> = ({
 
       return () => clearInterval(interval)
     }
-  }, [activeIndex, images])
+  }, [activeIndex, characters])
 
   const handlePageSelected = (e: { nativeEvent: { position: number } }) => {
     const position = e.nativeEvent.position
 
     if (position === 0) {
       setTimeout(() => {
-        pagerRef.current?.setPageWithoutAnimation(totalImages)
+        pagerRef.current?.setPageWithoutAnimation(totalCharacters)
       }, 100)
-    } else if (position === totalImages + 1) {
+    } else if (position === totalCharacters + 1) {
       setTimeout(() => {
         pagerRef.current?.setPageWithoutAnimation(1)
       }, 100)
@@ -73,10 +93,12 @@ const ImageCarousel: React.FC<ImageCarouselProps> = ({
       initialPage={1}
       onPageSelected={handlePageSelected}
     >
-      {extendedImages.map((image, index) => (
-        <View key={index} style={{ width: screenWidth }}>
+      {extendedCharacters.map((character, index) => (
+        <View key={`${character.id}-${index}`} style={{ width: screenWidth }}>
           <Animated.Image
-            source={{ uri: image }}
+            source={{
+              uri: `${character.thumbnail.path}.${character.thumbnail.extension}`,
+            }}
             style={[
               styles.image,
               {
@@ -85,28 +107,48 @@ const ImageCarousel: React.FC<ImageCarouselProps> = ({
                     scale:
                       imageScale[
                         index === 0
-                          ? totalImages - 1
-                          : (index - 1) % totalImages
+                          ? totalCharacters - 1
+                          : (index - 1) % totalCharacters
                       ],
                   },
                 ],
               },
             ]}
           />
+          <View style={styles.textContainer}>
+            <Text style={styles.title}>{character.name}</Text>
+          </View>
         </View>
       ))}
     </PagerView>
   )
 }
-
 const styles = StyleSheet.create({
   pagerView: {
     height: 250,
+  },
+  imageContainer: {
+    width: screenWidth,
+    height: '100%',
+    position: 'relative', // Ensure this is positioned relatively
   },
   image: {
     width: '100%',
     height: '100%',
     resizeMode: 'cover',
+  },
+  textContainer: {
+    position: 'absolute', // Position the text absolutely within the image container
+    bottom: 0,
+    left: 0,
+    width: '100%',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Optional: Add a semi-transparent background for better readability
+    padding: 10,
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: 'white',
   },
 })
 

@@ -1,36 +1,46 @@
 import React, { useEffect, useState } from 'react'
-import { View, StyleSheet } from 'react-native'
+import { View, StyleSheet, Text } from 'react-native'
 
 import Colors from '@/constants/Colors'
-import { getMarvelImages } from '@/api/marvel'
+import { getMarvelCharacters } from '@/api/marvel'
 import DotsIndicator from '@/components/home/DotsIndicator'
 import ImageCarousel from '@/components/home/ImageCarousel'
 
+interface MarvelCharacter {
+  id: number
+  name: string
+  description: string
+  thumbnail: {
+    path: string
+    extension: string
+  }
+}
+
 export default function HomeScreen() {
   const [activeIndex, setActiveIndex] = useState<number>(1)
-  const [images, setImages] = useState<string[]>([])
+  const [characters, setCharacters] = useState<MarvelCharacter[]>([])
 
   useEffect(() => {
-    const fetchImages = async () => {
-      const marvelImages = await getMarvelImages()
-      setImages(marvelImages)
+    const fetchCharacters = async () => {
+      const marvelCharacters = await getMarvelCharacters()
+      setCharacters(marvelCharacters)
       setActiveIndex(1)
     }
 
-    fetchImages()
+    fetchCharacters()
   }, [])
 
   return (
     <View>
-      {images.length > 0 && (
+      {characters.length > 0 && (
         <>
           <ImageCarousel
-            images={images}
+            characters={characters}
             activeIndex={activeIndex}
             setActiveIndex={setActiveIndex}
           />
           <DotsIndicator
-            images={images}
+            characters={characters}
             activeIndex={activeIndex}
             activeColor={Colors.dark.yoyo}
             inactiveColor='white'
@@ -40,5 +50,3 @@ export default function HomeScreen() {
     </View>
   )
 }
-
-const styles = StyleSheet.create({})

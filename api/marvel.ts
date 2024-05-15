@@ -13,7 +13,16 @@ const api = axios.create({
   baseURL: baseUrl,
 })
 
-export const getMarvelImages = async (): Promise<string[]> => {
+interface MarvelCharacter {
+  id: number
+  name: string
+  thumbnail: {
+    path: string
+    extension: string
+  }
+}
+
+export const getMarvelCharacters = async (): Promise<MarvelCharacter[]> => {
   const ts = new Date().getTime().toString()
   const hash = getHash(ts)
 
@@ -29,14 +38,17 @@ export const getMarvelImages = async (): Promise<string[]> => {
 
     const results = response.data.data.results
 
-    console.log('Marvel images:', results)
-    return results.map(
-      (character: { thumbnail: { path: string; extension: string } }) =>
-        `${character.thumbnail.path}.${character.thumbnail.extension}`
-    )
+    return results.map((character: MarvelCharacter) => ({
+      id: character.id,
+      name: character.name,
+      thumbnail: {
+        path: character.thumbnail.path,
+        extension: character.thumbnail.extension,
+      },
+    }))
   } catch (error: any) {
     console.error(
-      'Error fetching Marvel images:',
+      'Error fetching Marvel characters:',
       error.response?.status,
       error.message
     )
