@@ -2,14 +2,25 @@ import React from 'react'
 import { View, Image, StyleSheet } from 'react-native'
 import { useRouter, Link, Tabs } from 'expo-router'
 import { Pressable } from 'react-native'
+import { ExternalLink } from '@/components/ExternalLink'
 
 export function Header() {
   return (
     <View style={styles.container}>
-      <Image
-        source={require('@/assets/images/movie-logo.png')}
-        style={styles.logo}
-      />
+      <ExternalLink href='https://www.orderyoyo.com' asChild>
+        <Pressable>
+          {({ pressed }) => (
+            <Image
+              source={require('@/assets/images/movie-logo.png')}
+              style={{
+                height: '100%',
+                resizeMode: 'contain',
+                opacity: pressed ? 0.5 : 1,
+              }}
+            />
+          )}
+        </Pressable>
+      </ExternalLink>
       <Link href='/profile' asChild>
         <Pressable>
           {({ pressed }) => (
