@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react'
 import { View, StyleSheet, Animated } from 'react-native'
 
 interface DotsIndicatorProps {
-  images: any[]
+  images: string[]
   activeIndex: number
   activeColor: string
   inactiveColor: string
@@ -23,7 +23,7 @@ const DotsIndicator: React.FC<DotsIndicatorProps> = ({
         useNativeDriver: true,
       }).start()
     })
-  }, [activeIndex])
+  }, [activeIndex, images])
 
   return (
     <View style={styles.dotContainer}>

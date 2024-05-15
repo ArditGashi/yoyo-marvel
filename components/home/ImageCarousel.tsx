@@ -1,10 +1,11 @@
-import dimensions from '@/constants/Dimensions'
 import React, { useEffect, useRef } from 'react'
-import { View, StyleSheet, Dimensions, Animated } from 'react-native'
+import { View, StyleSheet, Dimensions, Animated, Image } from 'react-native'
 import PagerView from 'react-native-pager-view'
 
+const screenWidth = Dimensions.get('window').width
+
 interface ImageCarouselProps {
-  images: any[]
+  images: string[]
   activeIndex: number
   setActiveIndex: React.Dispatch<React.SetStateAction<number>>
 }
@@ -15,34 +16,39 @@ const ImageCarousel: React.FC<ImageCarouselProps> = ({
   setActiveIndex,
 }) => {
   const totalImages = images.length
-  const extendedImages = [images[totalImages - 1], ...images, images[0]]
+  const extendedImages =
+    totalImages > 0 ? [images[totalImages - 1], ...images, images[0]] : []
   const pagerRef = useRef<PagerView>(null)
   const imageScale = useRef(images.map(() => new Animated.Value(0.9))).current
 
   useEffect(() => {
-    Animated.spring(imageScale[activeIndex - 1], {
-      toValue: 1,
-      useNativeDriver: true,
-    }).start()
+    if (images.length > 0) {
+      Animated.spring(imageScale[activeIndex - 1], {
+        toValue: 1,
+        useNativeDriver: true,
+      }).start()
 
-    images.forEach((_, i) => {
-      if (i !== activeIndex - 1) {
-        Animated.spring(imageScale[i], {
-          toValue: 0.97,
-          useNativeDriver: true,
-        }).start()
-      }
-    })
-  }, [activeIndex])
+      images.forEach((_, i) => {
+        if (i !== activeIndex - 1) {
+          Animated.spring(imageScale[i], {
+            toValue: 0.97,
+            useNativeDriver: true,
+          }).start()
+        }
+      })
+    }
+  }, [activeIndex, images])
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      const nextIndex = activeIndex + 1
-      pagerRef.current?.setPage(nextIndex)
-    }, 2000)
+    if (images.length > 0) {
+      const interval = setInterval(() => {
+        const nextIndex = activeIndex + 1
+        pagerRef.current?.setPage(nextIndex)
+      }, 2000)
 
-    return () => clearInterval(interval)
-  }, [activeIndex])
+      return () => clearInterval(interval)
+    }
+  }, [activeIndex, images])
 
   const handlePageSelected = (e: { nativeEvent: { position: number } }) => {
     const position = e.nativeEvent.position
@@ -68,9 +74,9 @@ const ImageCarousel: React.FC<ImageCarouselProps> = ({
       onPageSelected={handlePageSelected}
     >
       {extendedImages.map((image, index) => (
-        <View key={index} style={{ width: dimensions.winWidth }}>
+        <View key={index} style={{ width: screenWidth }}>
           <Animated.Image
-            source={image}
+            source={{ uri: image }}
             style={[
               styles.image,
               {
@@ -95,7 +101,7 @@ const ImageCarousel: React.FC<ImageCarouselProps> = ({
 
 const styles = StyleSheet.create({
   pagerView: {
-    height: 256,
+    height: 250,
   },
   image: {
     width: '100%',
