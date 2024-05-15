@@ -8,24 +8,20 @@ export function ProfileHeader() {
   const router = useRouter()
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <View style={styles.headerContainer}>
-        <TouchableOpacity onPress={() => router.back()}>
-          <ArrowLeft size={28} color='#fff' />
-        </TouchableOpacity>
-      </View>
-    </SafeAreaView>
+    <View style={styles.headerContainer}>
+      <TouchableOpacity onPress={() => router.back()}>
+        <ArrowLeft size={28} color='#fff' />
+      </TouchableOpacity>
+    </View>
   )
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
-    backgroundColor: '#000', // Ensure the background matches the header
-  },
   headerContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 16,
-    height: 60, // Adjust as needed
+    paddingHorizontal: 10,
+    paddingTop: 10,
+    paddingBottom: 20,
   },
 })

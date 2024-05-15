@@ -60,10 +60,7 @@ function RootLayoutNav() {
           name='profile'
           options={{ presentation: 'fullScreenModal', headerShown: false }}
         />
-        <Stack.Screen
-          name='character/[id]'
-          options={{ title: 'Character Detail' }}
-        />
+        <Stack.Screen name='character/[id]' options={{ headerShown: false }} />
       </Stack>
     </ThemeProvider>
   )

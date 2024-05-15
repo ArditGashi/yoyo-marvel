@@ -1,15 +1,16 @@
-import Colors from '@/constants/Colors'
-import dimensions from '@/constants/Dimensions'
 import React, { useEffect, useRef } from 'react'
 import {
   View,
   StyleSheet,
   Dimensions,
   Animated,
-  Image,
   Text,
+  TouchableOpacity,
 } from 'react-native'
 import PagerView from 'react-native-pager-view'
+import { useRouter } from 'expo-router'
+
+const screenWidth = Dimensions.get('window').width
 
 interface MarvelCharacter {
   id: number
@@ -40,6 +41,7 @@ const ImageCarousel: React.FC<ImageCarouselProps> = ({
   const imageScale = useRef(
     characters.map(() => new Animated.Value(0.9))
   ).current
+  const router = useRouter()
 
   useEffect(() => {
     if (characters.length > 0) {
@@ -86,6 +88,10 @@ const ImageCarousel: React.FC<ImageCarouselProps> = ({
     }
   }
 
+  const handleImagePress = (character: MarvelCharacter) => {
+    router.push(`/character/${character.id}`)
+  }
+
   return (
     <PagerView
       ref={pagerRef}
@@ -94,9 +100,10 @@ const ImageCarousel: React.FC<ImageCarouselProps> = ({
       onPageSelected={handlePageSelected}
     >
       {extendedCharacters.map((character, index) => (
-        <View
+        <TouchableOpacity
           key={`${character.id}-${index}`}
-          style={{ width: dimensions.winWidth }}
+          style={styles.imageContainer}
+          onPress={() => handleImagePress(character)}
         >
           <Animated.Image
             source={{
@@ -121,19 +128,20 @@ const ImageCarousel: React.FC<ImageCarouselProps> = ({
           <View style={styles.textContainer}>
             <Text style={styles.title}>{character.name}</Text>
           </View>
-        </View>
+        </TouchableOpacity>
       ))}
     </PagerView>
   )
 }
+
 const styles = StyleSheet.create({
   pagerView: {
     height: 250,
   },
   imageContainer: {
-    width: dimensions.winWidth,
+    width: screenWidth,
     height: '100%',
-    position: 'relative', // Ensure this is positioned relatively
+    position: 'relative',
   },
   image: {
     width: '100%',
@@ -141,14 +149,14 @@ const styles = StyleSheet.create({
     resizeMode: 'cover',
   },
   textContainer: {
-    position: 'absolute', // Position the text absolutely within the image container
+    position: 'absolute',
     bottom: 8,
     alignSelf: 'center',
     fontWeight: 100,
     borderRadius: 2,
-    backgroundColor: Colors.dark.background, // Optional: Add a semi-transparent background for better readability
-    paddingHorizontal: 6, // Ensure the text is above the image
-    paddingVertical: 4, // Ensure the text is above the image
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    paddingHorizontal: 6,
+    paddingVertical: 4,
   },
   title: {
     fontSize: 18,
