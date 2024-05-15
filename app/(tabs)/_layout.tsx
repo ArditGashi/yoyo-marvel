@@ -1,4 +1,4 @@
-import React from 'react';
+/* import React from 'react';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Link, Tabs } from 'expo-router';
 import { Pressable } from 'react-native';
@@ -56,4 +56,92 @@ export default function TabLayout() {
       />
     </Tabs>
   );
+}
+ */
+
+import { Tabs } from 'expo-router'
+import React, { useMemo } from 'react'
+import {
+  Home,
+  Clapperboard,
+  Download,
+  Search,
+  LucideIcon,
+} from 'lucide-react-native'
+import { TabBarIcon } from '@/components/navigation/TabBarIcon'
+import Colors from '@/constants/Colors'
+import winHeight from '@/constants/Dimensions'
+import dimensions from '@/constants/Dimensions'
+import { Header } from '@/components/navigation/Header'
+
+type TabBarIconProps = {
+  focused: boolean
+  color: string
+}
+
+export default function TabLayout() {
+  /*   const colorScheme = useColorScheme()
+   */
+  const { activeColor, inactiveColor } = useMemo(
+    () => ({
+      activeColor: Colors.dark.yoyo,
+      inactiveColor: Colors.dark.tabIconDefault,
+    }),
+    []
+  )
+
+  const headerHeight = dimensions.winHeight * 0.15
+
+  const renderTabBarIcon =
+    (Icon: LucideIcon) =>
+    ({ focused }: TabBarIconProps) =>
+      <TabBarIcon Icon={Icon} color={focused ? activeColor : inactiveColor} />
+
+  return (
+    <Tabs
+      screenOptions={{
+        tabBarActiveTintColor: activeColor,
+        tabBarInactiveTintColor: inactiveColor,
+        tabBarStyle: {
+          height: dimensions.winHeight * 0.1,
+          backgroundColor: Colors.dark.background,
+        },
+        headerShown: true,
+        headerTitle: Header,
+        headerStyle: {
+          height: headerHeight,
+          backgroundColor: Colors.dark.background,
+        },
+      }}
+    >
+      <Tabs.Screen
+        name='index'
+        options={{
+          title: 'Home',
+          tabBarIcon: renderTabBarIcon(Home),
+        }}
+      />
+      <Tabs.Screen
+        name='movies'
+        options={{
+          title: 'Movies',
+          tabBarIcon: renderTabBarIcon(Clapperboard),
+        }}
+      />
+      <Tabs.Screen
+        name='download'
+        options={{
+          title: 'Download',
+          tabBarIcon: renderTabBarIcon(Download),
+        }}
+      />
+      <Tabs.Screen
+        name='find'
+        options={{
+          title: 'Find',
+          tabBarIcon: renderTabBarIcon(Search),
+        }}
+      />
+    </Tabs>
+  )
 }
