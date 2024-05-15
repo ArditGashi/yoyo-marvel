@@ -1,5 +1,4 @@
 import axios from 'axios'
-import md5 from 'md5'
 import { MarvelSeries } from '../lib/types'
 import { getHash, publicKey, baseUrl } from '../lib/utils'
 
