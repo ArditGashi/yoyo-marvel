@@ -10,32 +10,32 @@ import {
   Dimensions,
 } from 'react-native'
 import Colors from '@/constants/Colors'
-import { MarvelSeries } from '@/api/lib/types'
-import { getMarvelSeries } from '@/api/marvel'
+import { MarvelComics } from '@/api/lib/types'
+import { getMarvelComics } from '@/api/marvel'
 import LottieLoader from '@/components/LottieLoader'
 
-interface RecommendedSeriesSliderProps {
-  initialSeries: MarvelSeries[]
+interface TopComicsSliderProps {
+  initialComics: MarvelComics[]
 }
 
-export default function RecommendedSeriesSlider({
-  initialSeries,
-}: RecommendedSeriesSliderProps) {
-  const [series, setSeries] = useState<MarvelSeries[]>(initialSeries)
+export default function TopComicsSlider({
+  initialComics,
+}: TopComicsSliderProps) {
+  const [comics, setComics] = useState<MarvelComics[]>(initialComics)
   const [loading, setLoading] = useState<boolean>(false)
   const [showLoader, setShowLoader] = useState<boolean>(false)
   const scrollViewRef = useRef<ScrollView>(null)
-  const [offset, setOffset] = useState<number>(initialSeries.length)
+  const [offset, setOffset] = useState<number>(initialComics.length)
 
-  const fetchMoreSeries = async () => {
+  const fetchMoreComics = async () => {
     if (loading) return
 
     setLoading(true)
     setShowLoader(true) // Show loader immediately
 
-    const moreSeries = await getMarvelSeries(offset)
-    setSeries((prevSeries) => [...prevSeries, ...moreSeries])
-    setOffset((prevOffset) => prevOffset + moreSeries.length)
+    const moreComics = await getMarvelComics(offset)
+    setComics((prevComics) => [...prevComics, ...moreComics])
+    setOffset((prevOffset) => prevOffset + moreComics.length)
 
     setLoading(false)
     setTimeout(() => {
@@ -50,7 +50,7 @@ export default function RecommendedSeriesSlider({
       contentOffset.x + layoutMeasurement.width + paddingToBottom >=
       contentSize.width
     ) {
-      fetchMoreSeries()
+      fetchMoreComics()
     }
   }
 
@@ -58,7 +58,7 @@ export default function RecommendedSeriesSlider({
     <View style={styles.container}>
       <View style={styles.titleContainer}>
         <Text style={styles.headerTitle}>
-          <Text style={styles.headerHighlight}>YOYO</Text> - Recommended Series
+          <Text style={styles.headerHighlight}>YOYO</Text> - Top Comics
         </Text>
       </View>
       <ScrollView
@@ -70,7 +70,7 @@ export default function RecommendedSeriesSlider({
         scrollEventThrottle={16}
         contentContainerStyle={styles.contentContainer}
       >
-        {series.map((item, index) => (
+        {comics.map((item, index) => (
           <View key={`${item.id}-${index}`} style={styles.imageContainer}>
             <Image
               source={{
@@ -122,8 +122,8 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   loaderContainer: {
+    width: 150,
     paddingVertical: 50,
-    width: 150, // Ensure loader takes full width of the viewport
     justifyContent: 'center',
     alignItems: 'center',
   },
