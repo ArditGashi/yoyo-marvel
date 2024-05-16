@@ -6,25 +6,28 @@ import ImageCarousel from '@/components/home/ImageCarousel'
 import LottieLoader from '@/components/LottieLoader'
 import RecommendedSeriesSlider from '@/components/home/RecommendedSeriesSlider'
 import { fetchDataConcurrently } from '@/api/marvel'
-import { MarvelCharacter, MarvelSeries } from '@/api/lib/types'
+import { MarvelCharacter, MarvelComics, MarvelSeries } from '@/api/lib/types'
 import { useLocalSearchParams } from 'expo-router'
+import TopComicsSlider from '@/components/home/TopComicsSlider'
 
 export default function HomeScreen() {
   const [activeIndex, setActiveIndex] = useState<number>(1)
   const [characters, setCharacters] = useState<MarvelCharacter[]>([])
   const [series, setSeries] = useState<MarvelSeries[]>([])
+  const [comics, setComics] = useState<MarvelComics[]>([])
+
   const [loading, setLoading] = useState<boolean>(true)
   const [delayed, setDelayed] = useState<boolean>(true)
 
   const contentOpacity = useRef(new Animated.Value(0)).current
-  const { id } = useLocalSearchParams()
 
   useEffect(() => {
     const fetchCharacterAndSeries = async () => {
       try {
-        const { characters, series } = await fetchDataConcurrently()
+        const { characters, series, comics } = await fetchDataConcurrently()
         setSeries(series)
         setCharacters(characters)
+        setComics(comics)
         setActiveIndex(1)
 
         const images = [
@@ -33,6 +36,7 @@ export default function HomeScreen() {
               `${character.thumbnail.path}.${character.thumbnail.extension}`
           ),
           ...series.map((s) => `${s.thumbnail.path}.${s.thumbnail.extension}`),
+          ...comics.map((c) => `${c.thumbnail.path}.${c.thumbnail.extension}`),
         ]
 
         await Promise.all(images.map((url) => Image.prefetch(url))) // Prefetch images for better performance
@@ -64,7 +68,9 @@ export default function HomeScreen() {
       {loading || delayed ? (
         <LottieLoader />
       ) : (
-        <Animated.View style={{ ...styles.content, opacity: contentOpacity }}>
+        <Animated.ScrollView
+          style={{ ...styles.content, opacity: contentOpacity }}
+        >
           <SafeAreaView>
             <ImageCarousel
               characters={characters}
@@ -78,8 +84,9 @@ export default function HomeScreen() {
               inactiveColor='white'
             />
             <RecommendedSeriesSlider initialSeries={series} />
+            <TopComicsSlider initialComics={comics} />
           </SafeAreaView>
-        </Animated.View>
+        </Animated.ScrollView>
       )}
     </View>
   )

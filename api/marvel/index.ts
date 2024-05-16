@@ -1,6 +1,6 @@
 import axios from 'axios'
 import md5 from 'md5'
-import { MarvelCharacter, MarvelSeries } from '../lib/types'
+import { MarvelCharacter, MarvelComics, MarvelSeries } from '../lib/types'
 import { getHash, publicKey, baseUrl } from '../lib/utils'
 import { getRandomOffset } from '../lib/utils'
 
@@ -175,22 +175,80 @@ export const getMarvelSeries = async (
   }
 }
 
+export const getMarvelComics = async (
+  offset?: number
+): Promise<MarvelComics[]> => {
+  const ts = new Date().getTime().toString()
+  const hash = getHash(ts)
+
+  const totalComics = 1493
+  const limit = 16
+  const calculatedOffset =
+    offset !== undefined ? offset : getRandomOffset(totalComics - limit)
+
+  try {
+    const response = await api.get('/comics', {
+      params: {
+        ts,
+        apikey: publicKey,
+        hash,
+        limit,
+        offset: calculatedOffset,
+      },
+    })
+
+    const results = response.data.data.results
+
+    return results
+      .filter(
+        (comic: { thumbnail: { path: string } }) =>
+          comic.thumbnail.path.indexOf('image_not_available') === -1
+      )
+      .map(
+        (comic: {
+          id: number
+          title: string
+          thumbnail: {
+            path: string
+            extension: string
+          }
+        }) => ({
+          id: comic.id,
+          title: comic.title,
+          thumbnail: {
+            path: comic.thumbnail.path,
+            extension: comic.thumbnail.extension,
+          },
+        })
+      )
+  } catch (error: any) {
+    console.error(
+      'Error fetching Marvel comics:',
+      error.response?.status,
+      error.message
+    )
+    return []
+  }
+}
+
 export const fetchDataConcurrently = async (): Promise<{
   characters: MarvelCharacter[]
   series: MarvelSeries[]
+  comics: MarvelComics[]
 }> => {
   try {
-    const [characters, series] = await Promise.all([
+    const [characters, series, comics] = await Promise.all([
       getMarvelCharacters(),
       getMarvelSeries(),
+      getMarvelComics(),
     ])
-    return { characters, series }
+    return { characters, series, comics }
   } catch (error: any) {
     console.error(
       'Error fetching data concurrently:',
       error.response?.status,
       error.message
     )
-    return { characters: [], series: [] }
+    return { characters: [], series: [], comics: [] }
   }
 }
