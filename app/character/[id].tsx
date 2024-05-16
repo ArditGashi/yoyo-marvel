@@ -48,34 +48,36 @@ export default function CharacterDetailScreen() {
           }}
           style={styles.image}
         />
-        <Text style={styles.title}>{character.name}</Text>
-        {character.description && (
-          <View>
-            <Text style={styles.subtitle}>Description:</Text>
-            <Text style={styles.description}>{character.description}</Text>
-          </View>
-        )}
-        <Text style={styles.subtitle}>
-          Comics: {character.comics.available}
-        </Text>
-        <YoYoButton
-          title='View Comics'
-          onPress={() => Linking.openURL(character.comics.collectionURI)}
-        />
-        <Text style={styles.subtitle}>
-          Series: {character.series.available}
-        </Text>
-        <YoYoButton
-          title='View Series'
-          onPress={() => Linking.openURL(character.series.collectionURI)}
-        />
-        <Text style={styles.subtitle}>
-          Stories: {character.stories.available}
-        </Text>
-        <YoYoButton
-          title='View Stories'
-          onPress={() => Linking.openURL(character.stories.collectionURI)}
-        />
+        <View style={styles.contentContainer}>
+          <Text style={styles.title}>{character.name}</Text>
+          {character.description && (
+            <View>
+              <Text style={styles.subtitle}>Description:</Text>
+              <Text style={styles.description}>{character.description}</Text>
+            </View>
+          )}
+          <Text style={styles.subtitle}>
+            Comics: {character.comics.available}
+          </Text>
+          <YoYoButton
+            title='View Comics'
+            onPress={() => Linking.openURL(character.comics.collectionURI)}
+          />
+          <Text style={styles.subtitle}>
+            Series: {character.series.available}
+          </Text>
+          <YoYoButton
+            title='View Series'
+            onPress={() => Linking.openURL(character.series.collectionURI)}
+          />
+          <Text style={styles.subtitle}>
+            Stories: {character.stories.available}
+          </Text>
+          <YoYoButton
+            title='View Stories'
+            onPress={() => Linking.openURL(character.stories.collectionURI)}
+          />
+        </View>
       </ScrollView>
     </SafeAreaView>
   )
@@ -84,14 +86,18 @@ export default function CharacterDetailScreen() {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    paddingVertical: 16,
     alignItems: 'flex-start',
   },
+
   image: {
     width: '100%',
     height: 200,
     borderRadius: 0,
     marginBottom: 16,
+  },
+  contentContainer: {
+    padding: 16,
+    width: '100%',
   },
   title: {
     fontSize: 24,
