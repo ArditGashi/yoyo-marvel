@@ -7,3 +7,9 @@ export const baseUrl = 'https://gateway.marvel.com/v1/public'
 export const getHash = (ts: string): string => {
   return md5(ts + privateKey + publicKey)
 }
+
+export const getRandomOffset = (max: number): number => {
+  return Math.floor(Math.random() * max)
+}
+
+

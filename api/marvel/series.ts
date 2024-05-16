@@ -1,14 +1,10 @@
 import axios from 'axios'
 import { MarvelSeries } from '../lib/types'
-import { getHash, publicKey, baseUrl } from '../lib/utils'
+import { getHash, publicKey, baseUrl, getRandomOffset } from '../lib/utils'
 
 const api = axios.create({
   baseURL: baseUrl,
 })
-
-const getRandomOffset = (max: number) => {
-  return Math.floor(Math.random() * max)
-}
 
 export const getMarvelSeries = async (): Promise<MarvelSeries[]> => {
   const ts = new Date().getTime().toString()
