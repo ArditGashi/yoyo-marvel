@@ -103,3 +103,6 @@ This project is licensed under the MIT License. See the LICENSE file for more in
 - **Marvel API**: For providing the data used in the app.
 - **Expo**: For the development environment and build tools.
 - **Lottie**: For the loading animations.
+
+<img width="311" alt="image" src="https://github.com/ArditGashi/yoyo-marvel/assets/23475140/341e9cbc-6ff2-497f-bf2d-66c52aa74627">
+
