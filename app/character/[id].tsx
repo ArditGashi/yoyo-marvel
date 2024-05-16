@@ -4,18 +4,24 @@ import {
   Text,
   Image,
   StyleSheet,
-  Button,
   ScrollView,
   Linking,
 } from 'react-native'
 import { useRouter, useLocalSearchParams } from 'expo-router'
 import { MarvelCharacterDetail } from '@/api/lib/types'
-import { getMarvelCharacterDetail } from '@/api/marvel/characters'
+import {
+  getMarvelCharacterDetail,
+  getMarvelComics,
+  getMarvelSeries,
+  getMarvelStories,
+} from '@/api/marvel'
+
 import Colors from '@/constants/Colors'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { ProfileHeader } from '@/components/navigation/ProfileHeader'
 import YoYoButton from '@/components/Button'
 import LottieLoader from '@/components/LottieLoader'
+import { prefetchImage } from '@/api/lib/utils'
 
 export default function CharacterDetailScreen() {
   const { id } = useLocalSearchParams()
@@ -28,6 +34,28 @@ export default function CharacterDetailScreen() {
         const detail = await getMarvelCharacterDetail(Number(id))
         setCharacter(detail)
         setLoading(false)
+
+        // Prefetch additional data and images
+        if (detail) {
+          prefetchAdditionalData(detail)
+        }
+      }
+    }
+
+    const prefetchAdditionalData = async (character: MarvelCharacterDetail) => {
+      if (character.thumbnail) {
+        const imageUrl = `${character.thumbnail.path}.${character.thumbnail.extension}`
+        await prefetchImage(imageUrl) // Prefetch character image
+      }
+
+      if (character.comics.available > 0) {
+        getMarvelComics(character.id) // Prefetch comics data
+      }
+      if (character.series.available > 0) {
+        getMarvelSeries(character.id) // Prefetch series data
+      }
+      if (character.stories.available > 0) {
+        getMarvelStories() // Prefetch stories data
       }
     }
 
@@ -88,7 +116,6 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     alignItems: 'flex-start',
   },
-
   image: {
     width: '100%',
     height: 200,
@@ -108,7 +135,6 @@ const styles = StyleSheet.create({
   description: {
     fontSize: 16,
     textAlign: 'left',
-
     color: Colors.dark.tint,
   },
   subtitle: {
