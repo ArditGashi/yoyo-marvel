@@ -1,38 +1,57 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import {
   View,
   Text,
   StyleSheet,
   Image,
   ScrollView,
-  ActivityIndicator,
+  NativeSyntheticEvent,
+  NativeScrollEvent,
+  Dimensions,
 } from 'react-native'
 import Colors from '@/constants/Colors'
-import { getMarvelSeries } from '@/api/marvel/series' // Import the API function
-import { MarvelSeries } from '@/api/lib/types' // Import the type
+import { MarvelSeries } from '@/api/lib/types'
+import { getMarvelSeries } from '@/api/marvel'
 import LottieLoader from '@/components/LottieLoader'
 
-export default function RecommendedSeriesSlider() {
-  const [series, setSeries] = useState<MarvelSeries[]>([])
-  const [loading, setLoading] = useState<boolean>(true)
+interface RecommendedSeriesSliderProps {
+  initialSeries: MarvelSeries[]
+}
 
-  useEffect(() => {
-    const fetchSeries = async () => {
-      try {
-        const fetchedSeries = await getMarvelSeries()
-        setSeries(fetchedSeries)
-      } catch (error) {
-        console.error('Error fetching series:', error)
-      } finally {
-        setLoading(false)
-      }
+export default function RecommendedSeriesSlider({
+  initialSeries,
+}: RecommendedSeriesSliderProps) {
+  const [series, setSeries] = useState<MarvelSeries[]>(initialSeries)
+  const [loading, setLoading] = useState<boolean>(false)
+  const [showLoader, setShowLoader] = useState<boolean>(false)
+  const scrollViewRef = useRef<ScrollView>(null)
+  const [offset, setOffset] = useState<number>(initialSeries.length)
+
+  const fetchMoreSeries = async () => {
+    if (loading) return
+
+    setLoading(true)
+    setShowLoader(true) // Show loader immediately
+
+    const moreSeries = await getMarvelSeries(offset)
+    setSeries((prevSeries) => [...prevSeries, ...moreSeries])
+    setOffset((prevOffset) => prevOffset + moreSeries.length)
+
+    setLoading(false)
+    setTimeout(() => {
+      setShowLoader(false) // Add delay before hiding loader
+    }, 1000) // Adjust the delay as needed
+  }
+
+  const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    const { contentOffset, contentSize, layoutMeasurement } = event.nativeEvent
+    const paddingToBottom = 20
+    if (
+      contentOffset.x + layoutMeasurement.width + paddingToBottom >=
+      contentSize.width
+    ) {
+      fetchMoreSeries()
     }
-
-    fetchSeries()
-  }, [])
-
-  if (loading) {
-    return <LottieLoader />
   }
 
   return (
@@ -46,9 +65,13 @@ export default function RecommendedSeriesSlider() {
         horizontal
         showsHorizontalScrollIndicator={false}
         style={styles.scrollContainer}
+        ref={scrollViewRef}
+        onScroll={handleScroll}
+        scrollEventThrottle={16}
+        contentContainerStyle={styles.contentContainer}
       >
-        {series.map((item) => (
-          <View key={item.id} style={styles.imageContainer}>
+        {series.map((item, index) => (
+          <View key={`${item.id}-${index}`} style={styles.imageContainer}>
             <Image
               source={{
                 uri: `${item.thumbnail.path}.${item.thumbnail.extension}`,
@@ -57,6 +80,11 @@ export default function RecommendedSeriesSlider() {
             />
           </View>
         ))}
+        {showLoader && (
+          <View style={styles.loaderContainer}>
+            <LottieLoader width={64} height={64} />
+          </View>
+        )}
       </ScrollView>
     </View>
   )
@@ -64,7 +92,8 @@ export default function RecommendedSeriesSlider() {
 
 const styles = StyleSheet.create({
   container: {
-    paddingVertical: 48,
+    paddingVertical: 24,
+    position: 'relative',
   },
   titleContainer: {
     marginBottom: 10,
@@ -73,6 +102,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     color: Colors.dark.tint,
+    paddingLeft: 10,
   },
   headerHighlight: {
     color: Colors.dark.yoyo,
@@ -80,13 +110,21 @@ const styles = StyleSheet.create({
   scrollContainer: {
     paddingHorizontal: 10,
   },
+  contentContainer: {
+    paddingRight: 20, // Add padding to the right to provide space for the loader
+  },
   imageContainer: {
-    marginHorizontal: 10,
-    marginTop: 10,
+    marginRight: 10,
   },
   image: {
-    width: 256,
-    height: 128,
+    width: 150,
+    height: 200,
     borderRadius: 8,
+  },
+  loaderContainer: {
+    paddingVertical: 50,
+    width: 150, // Ensure loader takes full width of the viewport
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 })
