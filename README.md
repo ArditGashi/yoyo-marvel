@@ -51,7 +51,7 @@ The Marvel Characters App is a React Native application that allows users to exp
 
 5. **Run the app**:
    ```bash
-  yarn start
+   yarn start
    ```
 
 ## Usage
