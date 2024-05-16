@@ -15,7 +15,6 @@ import {
   getMarvelSeries,
   getMarvelStories,
 } from '@/api/marvel'
-
 import Colors from '@/constants/Colors'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { ProfileHeader } from '@/components/navigation/ProfileHeader'
@@ -43,7 +42,7 @@ export default function CharacterDetailScreen() {
     }
 
     const prefetchAdditionalData = async (character: MarvelCharacterDetail) => {
-      if (character.thumbnail) {
+      if (character.thumbnail && character.thumbnail.path) {
         const imageUrl = `${character.thumbnail.path}.${character.thumbnail.extension}`
         await prefetchImage(imageUrl) // Prefetch character image
       }
@@ -70,12 +69,14 @@ export default function CharacterDetailScreen() {
     <SafeAreaView>
       <ScrollView contentContainerStyle={styles.container}>
         <ProfileHeader />
-        <Image
-          source={{
-            uri: `${character.thumbnail.path}.${character.thumbnail.extension}`,
-          }}
-          style={styles.image}
-        />
+        {character.thumbnail && character.thumbnail.path && (
+          <Image
+            source={{
+              uri: `${character.thumbnail.path}.${character.thumbnail.extension}`,
+            }}
+            style={styles.image}
+          />
+        )}
         <View style={styles.contentContainer}>
           <Text style={styles.title}>{character.name}</Text>
           {character.description && (
