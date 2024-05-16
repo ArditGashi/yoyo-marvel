@@ -66,59 +66,6 @@ export const getMarvelCharacters = async (): Promise<MarvelCharacter[]> => {
   }
 }
 
-/* export const getMarvelSeries = async (): Promise<MarvelSeries[]> => {
-  const ts = new Date().getTime().toString()
-  const hash = getHash(ts)
-
-  const totalSeries = 1493
-  const limit = 10
-  const offset = getRandomOffset(totalSeries - limit)
-
-  try {
-    const response = await api.get('/series', {
-      params: {
-        ts,
-        apikey: publicKey,
-        hash,
-        limit,
-        offset,
-      },
-    })
-
-    const results = response.data.data.results
-
-    return results
-      .filter(
-        (series: { thumbnail: { path: string } }) =>
-          series.thumbnail.path.indexOf('image_not_available') === -1
-      )
-      .map(
-        (series: {
-          id: number
-          title: string
-          thumbnail: {
-            path: string
-            extension: string
-          }
-        }) => ({
-          id: series.id,
-          title: series.title,
-          thumbnail: {
-            path: series.thumbnail.path,
-            extension: series.thumbnail.extension,
-          },
-        })
-      )
-  } catch (error: any) {
-    console.error(
-      'Error fetching Marvel series:',
-      error.response?.status,
-      error.message
-    )
-    return []
-  }
-} */
-
 export const getMarvelSeries = async (
   offset?: number
 ): Promise<MarvelSeries[]> => {
